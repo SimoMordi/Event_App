@@ -14,17 +14,20 @@ const EventProvider = ({ children }) => {
       return [...prevEventItems, eventToAdd];
     });
   };
+  const updateEvent = (updatedEvent) => {
+    setEventItems((prevEventItems) => {
+      return prevEventItems.map((eventItem) =>
+        eventItem._id === updatedEvent._id ? updatedEvent : eventItem
+      );
+    });
+  };
 
   return (
     <EventContext.Provider
       value={{
-        show,
-        setShow,
-        newDescription,
-        setNewDescription,
-        eventItems,
-        setEventItems,
-        addToEvent,
+        show, setShow,  newDescription,
+        setNewDescription, eventItems,
+        setEventItems, addToEvent, updateEvent,
       }}
     >
       {children}

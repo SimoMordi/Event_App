@@ -5,7 +5,8 @@ const helmet = require('helmet'); // adds a bunch of standard security to server
 require('dotenv').config();
 require('./config/db.js');
 const Event = require('./models/Event.js');
-const PORT = 3000;
+const path =require('path')
+const PORT = 4000;
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use(cors({
 }));
 app.use(morgan('dev'));
 app.use(helmet());
+
+app.use(express.static(path.join(__dirname, "../client/dist")))
 // END MIDDLEWARE //
 
 // START ROUTES //
@@ -65,5 +68,5 @@ app.post("/events", async (req, res) => {
 // END ROUTES //
 
 app.listen(PORT, () => {
-    console.log(`Server LIVE on port ${PORT}`);
+    console.log(`Server LIVE on port: http://localhost:${PORT}`);
 });

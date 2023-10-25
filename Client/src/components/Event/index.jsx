@@ -2,42 +2,38 @@
 import axios from 'axios';
 import { useEventContext } from '../Context/EventContext';
 
-
 const Event = ({ event, handleDelete }) => {
   const {
     show,
     setShow,
     newDescription,
     setNewDescription,
-    addToEvent,
+    setEventItems, // Using only setEventItems now for consistency
   } = useEventContext();
 
   const toggleShow = () => setShow(!show);
 
   const handleInputChange = (e) => setNewDescription(e.target.value);
 
-  const updateDescription = (eventId) => {
-    
-    axios({
-      url: `/server/events/${eventId}`,
-      method: "PUT",
-      data: {  
-        description: newDescription
-      }
-    })
-    .then((response) => {
-      // Update the local state to reflect the updated event
-      addToEvent(response.data);
-  
-      // Optionally, you could clear the form or close it
-      setShow(false);
-      setNewDescription('');
-    })
-    .catch((error) => {
-      console.error("There was an error updating the event:", error);
+  const updateEventState = (updatedEvent) => {
+    setEventItems((prevEvents) => {
+      return prevEvents.map((e) => (e._id === updatedEvent._id ? updatedEvent : e));
     });
   };
-  
+
+  const updateDescription = async (eventId) => {
+    try {
+      const response = await axios.put(`/server/events/${eventId}`, {
+        description: newDescription,
+      });
+      updateEventState(response.data);
+      setShow(false);
+      setNewDescription('');
+    } catch (error) {
+      console.error('There was an error updating the event:', error);
+    }
+  };
+
   return (
     <div key={event._id} className="event-item">
       <button onClick={() => handleDelete(event._id)}>Delete</button>
@@ -51,14 +47,10 @@ const Event = ({ event, handleDelete }) => {
         <p>Name: {event.organizer.name}</p>
         <p>Role: {event.organizer.role}</p>
       </div>
-      
+
       {show && (
         <form onSubmit={(e) => e.preventDefault()}>
-          <input
-            value={newDescription}
-            onChange={handleInputChange}
-            placeholder="Update description"
-          />
+          <input value={newDescription} onChange={handleInputChange} placeholder="Update description" />
           <button onClick={() => updateDescription(event._id)}>Update this Event</button>
         </form>
       )}
@@ -67,6 +59,7 @@ const Event = ({ event, handleDelete }) => {
 };
 
 export default Event;
+
 
 
 
