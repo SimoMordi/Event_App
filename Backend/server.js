@@ -4,9 +4,10 @@ const morgan = require('morgan');
 const helmet = require('helmet'); // adds a bunch of standard security to server
 require('dotenv').config();
 require('./config/db.js');
-const Event = require('./models/Event.js');
 const path =require('path')
+const Event = require('./models/Event.js');
 const PORT = 4000;
+const Employee = require('./models/Employee.js');
 
 const app = express();
 
@@ -31,6 +32,8 @@ app.get("/events", async (req, res) => {
     let arrayOfEvents = await Event.find();
     res.send(arrayOfEvents);
 });
+
+
 
 app.delete("/events/:idOfEvent", async (req, res) => {
     // .findByIdAndDelete()
@@ -63,7 +66,20 @@ app.post("/events", async (req, res) => {
     }
     
 });
+app.get("/employees", async (req, res) => {
+    let employees = await Employee.find();
+    res.send(employees)
+})
 
+app.post("/employees", async (req, res) => {
+    try {
+        let respons = await Employee.create(req.body)
+        res.status.send(respons)
+    } catch (err) {
+        console.error(err);
+        res.send("Error")
+    }
+})
 
 // END ROUTES //
 
